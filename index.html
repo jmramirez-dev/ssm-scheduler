@@ -246,7 +246,7 @@
     <span class="badge live">● LIVE</span>
     <span class="badge">Madison, WI</span>
     <button class="btn btn-generate" id="generateBtn" onclick="openPeriodModal()">⚡ Generate Schedule</button>
-    <button class="btn btn-ghost" onclick="window.print()">↓ Export PDF</button>
+    <button class="btn btn-ghost" onclick="exportPDF()">↓ Export PDF</button>
   </div>
 </div>
 
@@ -1038,6 +1038,33 @@ function buildPrintLayout(){
       el.appendChild(pb);
     }
   });
+}
+
+// ── EXPORT PDF ────────────────────────────────────────────────────────────
+function exportPDF(){
+  buildPrintLayout();
+  const printEl=document.getElementById('printLayout');
+  const html=`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SSM Health \u2014 Sterile Products Schedule</title>
+<style>
+  @page{size:landscape;margin:0.3in}
+  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;color-adjust:exact !important}
+  body{margin:0;padding:0;background:#fff;font-family:Arial,Helvetica,sans-serif;font-size:8px}
+</style>
+</head>
+<body>
+${printEl.innerHTML}
+</body>
+</html>`;
+  const win=window.open('','_blank','width=1100,height=850');
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(()=>win.print(),600);
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────
