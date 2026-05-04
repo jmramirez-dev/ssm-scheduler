@@ -914,79 +914,109 @@ function buildPrintLayout(){
   const period=PERIODS[currentPeriodIdx];
   const dates=period?period.dates:PERIODS[3].dates;
 
-  const statsHtml=`<div class="print-stats">
-    <span><b>Staff:</b> ${document.getElementById('statTotal').textContent}</span>
-    <span><b>PTO:</b> ${document.getElementById('statPTO').textContent}</span>
-    <span><b>Night Avg:</b> ${document.getElementById('statNight').textContent}</span>
-    <span><b>SPA Avg:</b> ${document.getElementById('statSPA').textContent}</span>
-    <span><b>Gaps:</b> ${document.getElementById('statGaps').textContent}</span>
-  </div>`;
-
-  const legendHtml=`<div class="print-legend">
-    <span>OR</span><span>SR</span><span>PMC</span><span>PMR</span><span>PMIV</span>
-    <span>SPA1</span><span>SPA2</span><span>AMP</span><span>TCT</span><span>MC</span>
-    <span>NIGHT</span><span>PTO</span><span>DO</span><span>W</span><span>WED</span>
-    <span>XF/DS/WAF/ED=MRT</span><span>R=Rotation</span><span>Tr=Training</span>
-  </div>`;
-
   [{start:0,end:6,label:'Week 1'},{start:7,end:13,label:'Week 2'}].forEach((wk,wi)=>{
     const page=document.createElement('div');
     page.className='print-page';
 
-    const weekRange=`${dates[wk.start]} \u2013 ${dates[wk.end]}`;
-    page.innerHTML=`
-      <div class="print-hdr">
-        <span class="print-hdr-title">Sterile Products Scheduler \u2014 SSM Health St. Mary's</span>
-        <span class="print-hdr-sub">${period.label} \u00b7 ${wk.label}: ${weekRange}</span>
-      </div>
-      ${wi===0?statsHtml:''}
-    `;
+    // ── Page header
+    const hdr=document.createElement('div');
+    hdr.setAttribute('style','display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;padding-bottom:3px;border-bottom:2px solid #1b3a6b');
+    const t1=document.createElement('span');
+    t1.setAttribute('style','font-size:11px;font-weight:700;color:#1b3a6b');
+    t1.textContent='Sterile Products Scheduler \u2014 SSM Health St. Mary\u2019s';
+    const t2=document.createElement('span');
+    t2.setAttribute('style','font-size:8px;color:#5a7a9a;font-family:monospace');
+    t2.textContent=`${period.label} \u00b7 ${wk.label}: ${dates[wk.start]} \u2013 ${dates[wk.end]}`;
+    hdr.appendChild(t1);hdr.appendChild(t2);
+    page.appendChild(hdr);
 
+    // ── Stats row (week 1 only)
+    if(wi===0){
+      const stats=document.createElement('div');
+      stats.setAttribute('style','display:flex;gap:14px;padding:2px 0 4px;font-size:8px;color:#0f1f3d;white-space:nowrap');
+      [['Staff',document.getElementById('statTotal').textContent],
+       ['PTO',document.getElementById('statPTO').textContent],
+       ['Night Avg',document.getElementById('statNight').textContent],
+       ['SPA Avg',document.getElementById('statSPA').textContent],
+       ['Gaps',document.getElementById('statGaps').textContent]
+      ].forEach(([label,val])=>{
+        const s=document.createElement('span');
+        s.innerHTML=`<b style="color:#1b3a6b">${label}:</b> ${val}`;
+        stats.appendChild(s);
+      });
+      page.appendChild(stats);
+    }
+
+    // ── Sections
     scheduleData.forEach(section=>{
       if(activeFilter!=='ALL'&&section.id!==activeFilter)return;
       const filtered=section.staff.filter(p=>!searchQuery||p.name.toLowerCase().includes(searchQuery.toLowerCase()));
       if(!filtered.length)return;
 
-      // Wrap header+table together so Chrome won't break between them
       const wrap=document.createElement('div');
-      wrap.className='print-sec-wrap';
+      wrap.setAttribute('style','page-break-inside:avoid');
 
       const sh=document.createElement('div');
-      sh.className='print-sec-hdr';
+      sh.setAttribute('style','font-size:8px;font-weight:700;color:#1b3a6b;text-transform:uppercase;letter-spacing:0.8px;margin:4px 0 1px;page-break-after:avoid');
       sh.textContent=`${section.label} (${filtered.length})`;
       wrap.appendChild(sh);
 
       const table=document.createElement('table');
-      table.className='print-tbl';
+      table.setAttribute('style','width:100%;border-collapse:collapse;margin-bottom:2px');
 
-      let thead=`<thead><tr><th class="th-name">Staff</th>`;
+      // ── thead — built with DOM so inline bg survives
+      const thead=document.createElement('thead');
+      const hdrRow=document.createElement('tr');
+      const thStaff=document.createElement('th');
+      thStaff.setAttribute('style','background-color:#1b3a6b;color:#ffffff;padding:2px 5px;text-align:left;font-size:8px;font-weight:600;min-width:110px;white-space:nowrap');
+      thStaff.textContent='Staff';
+      hdrRow.appendChild(thStaff);
       for(let i=wk.start;i<=wk.end;i++){
-        const we=WEEKENDS.includes(i);
-        thead+=`<th${we?' style="background:#1b3a6b;color:#93c5fd"':' style="background:#1b3a6b;color:#fff"'}>${DAYS[i]}<br><span style="font-weight:300;font-size:6px">${dates[i]}</span></th>`;
+        const th=document.createElement('th');
+        th.setAttribute('style',`background-color:#1b3a6b;color:${WEEKENDS.includes(i)?'#93c5fd':'#ffffff'};padding:2px;text-align:center;font-size:7px;font-weight:600;white-space:nowrap`);
+        const daySpan=document.createElement('span');daySpan.textContent=DAYS[i];
+        const br=document.createElement('br');
+        const dateSpan=document.createElement('span');
+        dateSpan.setAttribute('style','font-weight:300;font-size:6px');
+        dateSpan.textContent=dates[i];
+        th.appendChild(daySpan);th.appendChild(br);th.appendChild(dateSpan);
+        hdrRow.appendChild(th);
       }
-      thead+=`</tr></thead>`;
-      table.innerHTML=thead;
+      thead.appendChild(hdrRow);
+      table.appendChild(thead);
 
+      // ── tbody — every element created via createElement + setAttribute
       const tbody=document.createElement('tbody');
       filtered.forEach(person=>{
         const tr=document.createElement('tr');
-        const displayName=person.name.split(',').reverse().join(' ').trim();
-        let row=`<td class="td-name" style="background:#fff;border-right:2px solid #1b3a6b;min-width:100px;padding:0 5px"><div class="staff-name" style="display:block;color:#000;font-size:7px;font-weight:500;white-space:nowrap;line-height:1.2">${displayName}</div><div class="staff-meta" style="display:block;color:#555;font-size:6px;line-height:1">${person.hrs?person.hrs+'hr':'PRN'}</div></td>`;
+
+        // Name cell
+        const tdN=document.createElement('td');
+        tdN.setAttribute('style','background-color:#ffffff;border-right:2px solid #1b3a6b;border-bottom:1px solid #c2d4e8;padding:0 5px;min-width:110px;vertical-align:middle;height:14px');
+        const nameDiv=document.createElement('div');
+        nameDiv.setAttribute('style','display:block;color:#000000;font-size:9px;font-weight:500;white-space:nowrap;line-height:1.3');
+        nameDiv.textContent=person.name.split(',').reverse().join(' ').trim();
+        const metaDiv=document.createElement('div');
+        metaDiv.setAttribute('style','display:block;color:#555555;font-size:7px;line-height:1');
+        metaDiv.textContent=person.hrs?person.hrs+'hr':'PRN';
+        tdN.appendChild(nameDiv);tdN.appendChild(metaDiv);
+        tr.appendChild(tdN);
+
+        // Shift cells
         for(let di=wk.start;di<=wk.end;di++){
           const shift=person.schedule[di];
-          const we=WEEKENDS.includes(di);
-          const cls=shiftClass(shift);
           const lbl=shift&&shift!=='-'&&shift!==''?shift:'';
-          const c=PRINT_COLORS[cls];
-          const pillStyle=c
-            ?`background:${c.bg};color:${c.fg};border:1px solid ${c.fg};font-size:6px;padding:1px 2px;border-radius:3px;display:inline-block;white-space:nowrap`
-            :'font-size:6px;padding:1px 2px;display:inline-block';
-          const tdBg=we?'background:#f0f4ff':'';
-          row+=`<td style="border:1px solid #c2d4e8;height:12px;padding:0 1px;vertical-align:middle;text-align:center;${tdBg}">
-            ${lbl?`<span style="${pillStyle}">${lbl}</span>`:''}
-          </td>`;
+          const td=document.createElement('td');
+          td.setAttribute('style',`border:1px solid #c2d4e8;height:14px;padding:0 1px;vertical-align:middle;text-align:center${WEEKENDS.includes(di)?';background-color:#f0f4ff':''}`);
+          if(lbl){
+            const colors=PRINT_COLORS[shiftClass(shift)];
+            const pill=document.createElement('span');
+            pill.textContent=lbl;
+            pill.setAttribute('style',`background-color:${colors?colors.bg:'#f1f5f9'};color:${colors?colors.fg:'#64748b'};border:1px solid ${colors?colors.fg:'#94a3b8'};padding:1px 4px;border-radius:3px;font-size:8px;font-weight:600;display:inline-block;white-space:nowrap`);
+            td.appendChild(pill);
+          }
+          tr.appendChild(td);
         }
-        tr.innerHTML=row;
         tbody.appendChild(tr);
       });
       table.appendChild(tbody);
@@ -994,11 +1024,19 @@ function buildPrintLayout(){
       page.appendChild(wrap);
     });
 
-    page.insertAdjacentHTML('beforeend',legendHtml);
+    // ── Legend
+    const leg=document.createElement('div');
+    leg.setAttribute('style','font-size:7px;color:#5a7a9a;margin-top:4px;border-top:1px solid #c2d4e8;padding-top:3px;display:flex;flex-wrap:wrap;gap:8px');
+    'OR SR PMC PMR PMIV SPA1 SPA2 AMP TCT MC NIGHT PTO DO W WED XF DS WAF ED R=Rotation Tr=Training'.split(' ').forEach(s=>{
+      const sp=document.createElement('span');sp.textContent=s;leg.appendChild(sp);
+    });
+    page.appendChild(leg);
     el.appendChild(page);
+
+    // ── Explicit page break between Week 1 and Week 2
     if(wi===0){
       const pb=document.createElement('div');
-      pb.style.cssText='page-break-after:always;break-after:page;height:0;margin:0;padding:0';
+      pb.setAttribute('style','page-break-after:always;break-after:page;height:0;margin:0;padding:0');
       el.appendChild(pb);
     }
   });
