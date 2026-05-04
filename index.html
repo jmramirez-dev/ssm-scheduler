@@ -85,7 +85,7 @@
   .section-count{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted)}
 
   .schedule-table{width:100%;border-collapse:collapse;min-width:960px}
-  .schedule-table th{position:sticky;top:63px;z-index:10;background:var(--navy);border-bottom:2px solid var(--border2);border-right:1px solid rgba(255,255,255,0.1);padding:9px 6px;font-size:10px;font-weight:600;text-align:center;color:rgba(255,255,255,0.75);text-transform:uppercase;letter-spacing:0.6px;white-space:nowrap}
+  .schedule-table th{position:static;z-index:10;background:var(--navy);border-bottom:2px solid var(--border2);border-right:1px solid rgba(255,255,255,0.1);padding:9px 6px;font-size:10px;font-weight:600;text-align:center;color:rgba(255,255,255,0.75);text-transform:uppercase;letter-spacing:0.6px;white-space:nowrap}
   .th-name{text-align:left !important;padding-left:14px !important;min-width:175px;position:sticky !important;left:0;z-index:20 !important;background:var(--navy) !important}
   .th-day.weekend{color:#93c5fd}
   .schedule-table td{border-bottom:1px solid var(--border);border-right:1px solid var(--border);padding:0;vertical-align:middle;height:40px}
@@ -181,6 +181,7 @@
 
   @page{size:landscape;margin:0.3in}
   @media print {
+    *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
     .header,.toolbar,.gen-banner,.hours-bar,.swap-dropdown,.modal-overlay,.legend,.gap-fill{display:none !important}
     .stats-bar{display:none !important}
     #mainContent{display:none !important}
@@ -195,17 +196,39 @@
     .print-stats b{color:#1b3a6b}
     .print-sec-hdr{font-size:8px;font-weight:700;color:#1b3a6b;text-transform:uppercase;letter-spacing:0.8px;margin:5px 0 2px;page-break-after:avoid}
     .print-tbl{width:100%;border-collapse:collapse;font-size:8px;margin-bottom:3px;page-break-inside:auto}
-    .print-tbl th{background:#1b3a6b !important;color:#fff !important;padding:4px 3px;font-size:8px;font-weight:600;text-align:center;border-right:1px solid rgba(255,255,255,0.2);-webkit-print-color-adjust:exact;print-color-adjust:exact;white-space:nowrap}
+    .print-tbl th{background:#1b3a6b !important;color:#fff !important;padding:4px 3px;font-size:8px;font-weight:600;text-align:center;border-right:1px solid rgba(255,255,255,0.2);white-space:nowrap}
     .print-tbl .th-name{text-align:left;padding-left:6px;min-width:110px}
     .print-tbl td{border:1px solid #c2d4e8;padding:1px 2px;height:17px;vertical-align:middle}
     .print-tbl .td-name{padding:1px 5px;border-right:2px solid #1b3a6b !important;position:static !important;background:#fff !important;min-width:110px}
     .print-tbl .staff-name{display:block !important;color:#000 !important;visibility:visible !important;font-size:8px;font-weight:500;white-space:nowrap}
     .print-tbl .staff-meta{display:block !important;color:#555 !important;visibility:visible !important;font-size:7px}
     .print-tbl .shift-cell{padding:1px;cursor:default}
-    .print-tbl .shift-pill{font-size:7px;padding:1px 3px;min-width:unset;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .print-tbl .shift-pill{font-size:7px;padding:1px 3px;min-width:unset}
     .print-tbl tr{page-break-inside:avoid}
     .print-legend{font-size:7px;color:#5a7a9a;margin-top:4px;border-top:1px solid #c2d4e8;padding-top:3px;display:flex;flex-wrap:wrap;gap:8px}
-    .s-OR,.s-SR,.s-PMC,.s-PMR,.s-PMIV,.s-SPA1,.s-SPA2,.s-AMP,.s-TCT,.s-MC,.s-NIGHT,.s-PTO,.s-DO,.s-W,.s-WED,.s-XF,.s-DS,.s-WAF,.s-ED,.s-PMP,.s-INT,.s-RTR,.s-other{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .s-OR  {background:#d1fae5 !important;color:#065f46 !important;border-color:#6ee7b7 !important}
+    .s-SR  {background:#ede9fe !important;color:#4c1d95 !important;border-color:#c4b5fd !important}
+    .s-PMC {background:#dbeafe !important;color:#1e3a8a !important;border-color:#93c5fd !important}
+    .s-PMR {background:#cffafe !important;color:#164e63 !important;border-color:#67e8f9 !important}
+    .s-PMIV{background:#fef3c7 !important;color:#78350f !important;border-color:#fcd34d !important}
+    .s-SPA1{background:#fce7f3 !important;color:#831843 !important;border-color:#f9a8d4 !important}
+    .s-SPA2{background:#fdf2f8 !important;color:#9d174d !important;border-color:#fbcfe8 !important}
+    .s-AMP {background:#ffedd5 !important;color:#7c2d12 !important;border-color:#fdba74 !important}
+    .s-TCT {background:#ecfccb !important;color:#3f6212 !important;border-color:#bef264 !important}
+    .s-MC  {background:#f3e8ff !important;color:#581c87 !important;border-color:#d8b4fe !important}
+    .s-NIGHT{background:#e0e7ff !important;color:#1e1b4b !important;border-color:#a5b4fc !important}
+    .s-PTO {background:#fee2e2 !important;color:#7f1d1d !important;border-color:#fca5a5 !important}
+    .s-DO  {background:#f1f5f9 !important;color:#94a3b8 !important;border-color:#cbd5e1 !important}
+    .s-W   {background:#eff6ff !important;color:#1d4ed8 !important;border-color:#bfdbfe !important}
+    .s-WED {background:#ccfbf1 !important;color:#134e4a !important;border-color:#5eead4 !important}
+    .s-XF  {background:#fae8ff !important;color:#701a75 !important;border-color:#e879f9 !important}
+    .s-DS  {background:#e0f2fe !important;color:#0c4a6e !important;border-color:#7dd3fc !important}
+    .s-WAF {background:#fff7ed !important;color:#7c2d12 !important;border-color:#fb923c !important}
+    .s-ED  {background:#dcfce7 !important;color:#14532d !important;border-color:#86efac !important}
+    .s-PMP {background:#f8fafc !important;color:#475569 !important;border-color:#cbd5e1 !important}
+    .s-INT {background:#d1fae5 !important;color:#064e3b !important;border-color:#6ee7b7 !important}
+    .s-RTR {background:#fefce8 !important;color:#713f12 !important;border-color:#fde047 !important}
+    .s-other{background:#f1f5f9 !important;color:#64748b !important;border-color:#e2e8f0 !important}
   }
 </style>
 </head>
@@ -352,27 +375,35 @@
 const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat','Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const WEEKENDS=[0,6,7,13];
 
-// Known periods — auto-detects next ones
-const PERIODS=[
-  {label:'Mar 22 – Apr 4, 2026',  start:'3/22', dates:genDates('2026-03-22')},
-  {label:'Apr 5 – Apr 18, 2026',  start:'4/5',  dates:genDates('2026-04-05')},
-  {label:'Apr 19 – May 2, 2026',  start:'4/19', dates:genDates('2026-04-19')},
-  {label:'May 3 – May 16, 2026',  start:'5/3',  dates:genDates('2026-05-03')},
-  {label:'May 17 – May 30, 2026', start:'5/17', dates:genDates('2026-05-17')},
-  {label:'May 31 – Jun 13, 2026', start:'5/31', dates:genDates('2026-05-31')},
-  {label:'Jun 14 – Jun 27, 2026', start:'6/14', dates:genDates('2026-06-14')},
-  {label:'Jun 28 – Jul 11, 2026', start:'6/28', dates:genDates('2026-06-28')},
-  {label:'Jul 12 – Jul 25, 2026', start:'7/12', dates:genDates('2026-07-12')},
-  {label:'Jul 26 – Aug 8, 2026',  start:'7/26', dates:genDates('2026-07-26')},
-  {label:'Aug 9 – Aug 22, 2026',  start:'8/9',  dates:genDates('2026-08-09')},
+// Historical periods — hardcoded with real schedule data
+const HISTORICAL_PERIODS=[
+  {label:'Mar 22 – Apr 4, 2026',  dates:genDates('2026-03-22')},
+  {label:'Apr 5 – Apr 18, 2026',  dates:genDates('2026-04-05')},
+  {label:'Apr 19 – May 2, 2026',  dates:genDates('2026-04-19')},
+  {label:'May 3 – May 16, 2026',  dates:genDates('2026-05-03')},
 ];
+// Future periods generated dynamically — never needs manual updating
+const PERIODS=[...HISTORICAL_PERIODS, ...getFuturePeriods()];
 
-function genDates(startStr){
-  const d=new Date(startStr+'T00:00:00');
+function genDates(startIn){
+  const d=startIn instanceof Date?new Date(startIn):new Date(startIn+'T00:00:00');
   return Array.from({length:14},(_,i)=>{
     const dd=new Date(d);dd.setDate(d.getDate()+i);
     return `${dd.getMonth()+1}/${dd.getDate()}`;
   });
+}
+
+function getFuturePeriods(){
+  const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const periods=[];
+  const s=new Date('2026-05-17T00:00:00');
+  for(let i=0;i<8;i++){
+    const end=new Date(s);end.setDate(s.getDate()+13);
+    const label=`${MONTHS[s.getMonth()]} ${s.getDate()} \u2013 ${MONTHS[end.getMonth()]} ${end.getDate()}, ${end.getFullYear()}`;
+    periods.push({label,dates:genDates(new Date(s))});
+    s.setDate(s.getDate()+14);
+  }
+  return periods;
 }
 
 let currentPeriodIdx=4; // default May 17-30 (current period)
