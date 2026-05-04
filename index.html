@@ -177,27 +177,35 @@
   ::-webkit-scrollbar{width:6px;height:6px}
   ::-webkit-scrollbar-track{background:transparent}
   ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  #printLayout{display:none}
 
-  @page{size:landscape;margin:0.4in}
+  @page{size:landscape;margin:0.3in}
   @media print {
-    .header,.toolbar,.gen-banner,.hours-bar,.swap-dropdown,.modal-overlay{display:none !important}
-    body{background:#fff;font-size:10px}
-    .main{padding:8px}
-    .stats-bar{display:flex !important;break-inside:avoid}
-    .stat-card{min-width:80px;padding:8px 12px}
-    .stat-value{font-size:16px}
-    .schedule-table{min-width:unset;font-size:8px}
-    .schedule-table th{position:static;background:#1b3a6b !important;color:#fff !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:5px 3px}
-    .td-name{position:static;border-right:1px solid #1b3a6b !important}
-    .staff-name{display:block;color:#000 !important}
-    .staff-meta{display:block;color:#000 !important}
-    .shift-pill{font-size:8px;padding:2px 4px;min-width:unset;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .header,.toolbar,.gen-banner,.hours-bar,.swap-dropdown,.modal-overlay,.legend,.gap-fill{display:none !important}
+    .stats-bar{display:none !important}
+    #mainContent{display:none !important}
+    body{background:#fff;margin:0;padding:0}
+    #printLayout{display:block !important}
+    .print-page{zoom:0.75;page-break-after:always}
+    .print-page:last-child{page-break-after:avoid}
+    .print-hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;padding-bottom:4px;border-bottom:2px solid #1b3a6b}
+    .print-hdr-title{font-size:12px;font-weight:700;color:#1b3a6b}
+    .print-hdr-sub{font-size:9px;color:#5a7a9a;font-family:'DM Mono',monospace}
+    .print-stats{display:flex;gap:14px;padding:3px 0 5px;font-size:9px;color:#0f1f3d;flex-wrap:nowrap;white-space:nowrap}
+    .print-stats b{color:#1b3a6b}
+    .print-sec-hdr{font-size:8px;font-weight:700;color:#1b3a6b;text-transform:uppercase;letter-spacing:0.8px;margin:5px 0 2px;page-break-after:avoid}
+    .print-tbl{width:100%;border-collapse:collapse;font-size:8px;margin-bottom:3px;page-break-inside:auto}
+    .print-tbl th{background:#1b3a6b !important;color:#fff !important;padding:4px 3px;font-size:8px;font-weight:600;text-align:center;border-right:1px solid rgba(255,255,255,0.2);-webkit-print-color-adjust:exact;print-color-adjust:exact;white-space:nowrap}
+    .print-tbl .th-name{text-align:left;padding-left:6px;min-width:110px}
+    .print-tbl td{border:1px solid #c2d4e8;padding:1px 2px;height:17px;vertical-align:middle}
+    .print-tbl .td-name{padding:1px 5px;border-right:2px solid #1b3a6b !important;position:static !important;background:#fff !important;min-width:110px}
+    .print-tbl .staff-name{display:block !important;color:#000 !important;visibility:visible !important;font-size:8px;font-weight:500;white-space:nowrap}
+    .print-tbl .staff-meta{display:block !important;color:#555 !important;visibility:visible !important;font-size:7px}
+    .print-tbl .shift-cell{padding:1px;cursor:default}
+    .print-tbl .shift-pill{font-size:7px;padding:1px 3px;min-width:unset;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .print-tbl tr{page-break-inside:avoid}
+    .print-legend{font-size:7px;color:#5a7a9a;margin-top:4px;border-top:1px solid #c2d4e8;padding-top:3px;display:flex;flex-wrap:wrap;gap:8px}
     .s-OR,.s-SR,.s-PMC,.s-PMR,.s-PMIV,.s-SPA1,.s-SPA2,.s-AMP,.s-TCT,.s-MC,.s-NIGHT,.s-PTO,.s-DO,.s-W,.s-WED,.s-XF,.s-DS,.s-WAF,.s-ED,.s-PMP,.s-INT,.s-RTR,.s-other{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .legend{display:flex !important;padding:6px 10px;flex-wrap:wrap;gap:6px;border-top:1px solid #1b3a6b}
-    .section-header{margin-top:10px}
-    .gap-fill{display:none}
-    .schedule-table tr{page-break-inside:avoid}
-    .section-prn,.section-mrt{page-break-before:always}
   }
 </style>
 </head>
@@ -346,12 +354,17 @@ const WEEKENDS=[0,6,7,13];
 
 // Known periods — auto-detects next ones
 const PERIODS=[
-  {label:'Mar 22 – Apr 4, 2026', start:'3/22', dates:genDates('2026-03-22')},
-  {label:'Apr 5 – Apr 18, 2026', start:'4/5',  dates:genDates('2026-04-05')},
-  {label:'Apr 19 – May 2, 2026', start:'4/19', dates:genDates('2026-04-19')},
-  {label:'May 3 – May 16, 2026', start:'5/3',  dates:genDates('2026-05-03')},
-  {label:'May 17 – May 30, 2026',start:'5/17', dates:genDates('2026-05-17')},
-  {label:'May 31 – Jun 13, 2026',start:'5/31', dates:genDates('2026-05-31')},
+  {label:'Mar 22 – Apr 4, 2026',  start:'3/22', dates:genDates('2026-03-22')},
+  {label:'Apr 5 – Apr 18, 2026',  start:'4/5',  dates:genDates('2026-04-05')},
+  {label:'Apr 19 – May 2, 2026',  start:'4/19', dates:genDates('2026-04-19')},
+  {label:'May 3 – May 16, 2026',  start:'5/3',  dates:genDates('2026-05-03')},
+  {label:'May 17 – May 30, 2026', start:'5/17', dates:genDates('2026-05-17')},
+  {label:'May 31 – Jun 13, 2026', start:'5/31', dates:genDates('2026-05-31')},
+  {label:'Jun 14 – Jun 27, 2026', start:'6/14', dates:genDates('2026-06-14')},
+  {label:'Jun 28 – Jul 11, 2026', start:'6/28', dates:genDates('2026-06-28')},
+  {label:'Jul 12 – Jul 25, 2026', start:'7/12', dates:genDates('2026-07-12')},
+  {label:'Jul 26 – Aug 8, 2026',  start:'7/26', dates:genDates('2026-07-26')},
+  {label:'Aug 9 – Aug 22, 2026',  start:'8/9',  dates:genDates('2026-08-09')},
 ];
 
 function genDates(startStr){
@@ -362,8 +375,8 @@ function genDates(startStr){
   });
 }
 
-let currentPeriodIdx=3; // default May 3-16
-let selectedPeriodIdx=4; // for modal
+let currentPeriodIdx=4; // default May 17-30 (current period)
+let selectedPeriodIdx=5; // for modal (next period)
 
 // ── PATTERNS learned from 4 historical schedules ───────────────────────────
 // work_rate = fraction of non-weekend days worked
@@ -373,7 +386,7 @@ let selectedPeriodIdx=4; // for modal
 
 const TECH_PATTERNS={
   'Lewis, Michelle':   {locked:'OR',  work_rate:0.64, off_days:[0,6]},
-  'McGuire, Tiffany':  {locked:'A',   work_rate:0.64, off_days:[0,6]},
+  'McGuire, Tiffany':  {shifts:['A','A','A','A','6PM','OR'], work_rate:0.64, off_days:[0,6]},
   'Ahmeti, Fllanza':   {locked:'SR',  work_rate:0.71, off_days:[0,6]},
   'Cahill, Ian':       {shifts:['PMC','PMC','PMC','PMR','PMR'], work_rate:0.68, off_days:[0,6]},
   'Davis, Megan':      {shifts:['C','C','TCT','TCT','W','W','AMP','R','R'], work_rate:0.73, off_days:[0,6]},
@@ -382,7 +395,7 @@ const TECH_PATTERNS={
   'Ramirez, Juan':     {shifts:['NIGHT','NIGHT','NIGHT','NIGHT','NIGHT','PMIV','PMIV'], work_rate:0.64, off_days:[6]},
   'Reynolds, Monique': {shifts:['AMP','AMP','AMP','R','R','SPA1','SPA1','MC','C'], work_rate:0.54, off_days:[0,6]},
   'Rubasch, Gunilla':  {shifts:['MC','MC','MC','MC','C','C','C','TCT'], work_rate:0.54, off_days:[0,6]},
-  'Sabadin, Alana':    {shifts:['SPA1','SPA1','SPA1','SPA2','SPA2','SPA2','SPA2'], work_rate:0.62, off_days:[0,6]},
+  'Sabadin, Alana':    {shifts:['SPA1','SPA1','SPA2','SPA2','SPA2','PMIV'], work_rate:0.62, off_days:[0,6]},
   'Shuff, Beth':       {shifts:['MC','R','SPA1','SPA2','C'], work_rate:0.27, off_days:[0,1,6]},
   'Tabarak, Fatima':   {shifts:['MC','MC','MC','AMP','AMP','AMP','C','C','R','R'], work_rate:0.68, off_days:[0,6]},
   'Werner, Theresa':   {shifts:['SPA1','SPA1','SPA1','SPA1','SPA2','SPA2'], work_rate:0.59, off_days:[0,6]},
@@ -402,8 +415,9 @@ const TECH_PATTERNS={
   'Ploessl, Ross':     {shifts:['PMR','PMC','PMP','R','DO','DO'], work_rate:0.25, off_days:[0,6]},
   'Pun, Krista':       {shifts:['AMP','PMP','PMP','PMR','MC','C','DO'], work_rate:0.4, off_days:[0,6]},
   'Reilly, Reese':     {shifts:['PMR','PMP','AMP','R','DO','DO','DO'], work_rate:0.3, off_days:[0,6]},
-  'Williams, Mary':    {shifts:['PMIV','SPA1','W','DO','DO'], work_rate:0.3, off_days:[0,6]},
-  'Hearn, Nathan':     {shifts:['R Tr','AMP Tr','R'], work_rate:0.6, off_days:[0,6]},
+  'Williams, Mary':    {shifts:['PMIV','SPA1','DO','DO','DO','DO'], work_rate:0.15, off_days:[0,6]},
+  'Hearn, Nathan':     {shifts:['R Tr','AMP Tr','SPA1 Tr','PMR Tr','PMC Tr'], work_rate:0.6, off_days:[0,6]},
+  'Rodriguez, Markus': {shifts:['PMC','PMR','PMP','MC','PMC Tr','PMR Tr'], work_rate:0.65, off_days:[0,6]},
   // MRT
   'Dahnke, Sarah':     {shifts:['DS','DS','DS','XF','WAF'], work_rate:0.71, off_days:[0,6]},
   'DeRose, Dani':      {shifts:['XF','XF','XF','ED','WED'], work_rate:0.71, off_days:[0,6]},
@@ -428,6 +442,7 @@ const SECTIONS=[
     {name:'Shuff, Beth',hrs:5,schedule:['','PTO','DO','SPA1','SPA1','R','MC','','','','','','','']},
     {name:'Tabarak, Fatima',hrs:10,schedule:['','AMP','R Tr','MC','PTO','AMP','MC','','AMP Tr','R','AMP','R','','']},
     {name:'Werner, Theresa',hrs:9,schedule:['','SPA2','SPA2','SPA1','SPA1','SPA1','SPA1','','DO','PTO','PTO','PTO','','']},
+    {name:'Rodriguez, Markus',hrs:10,schedule:['','','','','','','','','','','','','','']},
   ]},
   {id:'RPh',label:'RPh Shifts',staff:[
     {name:'Apel, Ben',hrs:null,schedule:['','W','W','W','W','W','','','W','W','W','W','W','']},
@@ -635,6 +650,7 @@ function updateHours(){
       bar.appendChild(chip);
     });
   });
+  buildPrintLayout();
 }
 
 // ── RENDER ──────────────────────────────────────────────────────────────────
@@ -809,7 +825,7 @@ function saveShift(){
 function openPeriodModal(){
   const grid=document.getElementById('periodGrid');grid.innerHTML='';
   PERIODS.forEach((p,i)=>{
-    if(i<3)return; // only show current + future
+    if(i<4)return; // only show current + future (May 17+ onwards)
     const div=document.createElement('div');
     div.className=`period-opt${i===selectedPeriodIdx?' selected':''}`;
     div.innerHTML=`<div class="period-dates">${p.label}</div><div class="period-label">${i===currentPeriodIdx?'Current period':i<currentPeriodIdx?'Past':'Future'}</div>`;
@@ -831,6 +847,92 @@ function nextPeriod(){
 // ── FILTERS ────────────────────────────────────────────────────────────────
 function filterSection(id,btn){activeFilter=id;document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderSchedule();}
 function searchStaff(v){searchQuery=v;renderSchedule();}
+
+// ── PRINT LAYOUT ──────────────────────────────────────────────────────────
+// Builds a hidden two-page print layout: week 1 (days 0-6) on page 1, week 2 (days 7-13) on page 2.
+// Bypasses sticky positioning and inline onclick to ensure clean rendering.
+function buildPrintLayout(){
+  let el=document.getElementById('printLayout');
+  if(!el){el=document.createElement('div');el.id='printLayout';document.body.appendChild(el);}
+  el.innerHTML='';
+
+  const period=PERIODS[currentPeriodIdx];
+  const dates=period?period.dates:PERIODS[3].dates;
+
+  const statsHtml=`<div class="print-stats">
+    <span><b>Staff:</b> ${document.getElementById('statTotal').textContent}</span>
+    <span><b>PTO:</b> ${document.getElementById('statPTO').textContent}</span>
+    <span><b>Night Avg:</b> ${document.getElementById('statNight').textContent}</span>
+    <span><b>SPA Avg:</b> ${document.getElementById('statSPA').textContent}</span>
+    <span><b>Gaps:</b> ${document.getElementById('statGaps').textContent}</span>
+  </div>`;
+
+  const legendHtml=`<div class="print-legend">
+    <span>OR</span><span>SR</span><span>PMC</span><span>PMR</span><span>PMIV</span>
+    <span>SPA1</span><span>SPA2</span><span>AMP</span><span>TCT</span><span>MC</span>
+    <span>NIGHT</span><span>PTO</span><span>DO</span><span>W=Wknd</span><span>WED=WedShift</span>
+    <span>XF/DS/WAF/ED=MRT</span><span>R=Rotation</span><span>Tr=Training</span>
+  </div>`;
+
+  [{start:0,end:6,label:'Week 1'},{start:7,end:13,label:'Week 2'}].forEach((wk,wi)=>{
+    const page=document.createElement('div');
+    page.className='print-page';
+
+    const weekRange=`${dates[wk.start]} – ${dates[wk.end]}`;
+    page.innerHTML=`
+      <div class="print-hdr">
+        <span class="print-hdr-title">Sterile Products Scheduler — SSM Health St. Mary's</span>
+        <span class="print-hdr-sub">${period.label} · ${wk.label}: ${weekRange}</span>
+      </div>
+      ${wi===0?statsHtml:''}
+    `;
+
+    scheduleData.forEach(section=>{
+      if(activeFilter!=='ALL'&&section.id!==activeFilter)return;
+      const filtered=section.staff.filter(p=>!searchQuery||p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+      if(!filtered.length)return;
+
+      const sh=document.createElement('div');
+      sh.className='print-sec-hdr';
+      sh.textContent=`${section.label} (${filtered.length})`;
+      page.appendChild(sh);
+
+      const table=document.createElement('table');
+      table.className='print-tbl';
+
+      let thead=`<thead><tr><th class="th-name">Staff</th>`;
+      for(let i=wk.start;i<=wk.end;i++){
+        const we=WEEKENDS.includes(i);
+        thead+=`<th${we?' style="color:#93c5fd"':''}>${DAYS[i]}<br><span style="font-weight:300;font-size:7px">${dates[i]}</span></th>`;
+      }
+      thead+=`</tr></thead>`;
+      table.innerHTML=thead;
+
+      const tbody=document.createElement('tbody');
+      filtered.forEach(person=>{
+        const tr=document.createElement('tr');
+        const displayName=person.name.split(',').reverse().join(' ').trim();
+        let row=`<td class="td-name"><div class="staff-name">${displayName}</div><div class="staff-meta">${person.hrs?person.hrs+'hr':'PRN'}</div></td>`;
+        for(let di=wk.start;di<=wk.end;di++){
+          const shift=person.schedule[di];
+          const we=WEEKENDS.includes(di);
+          const cls=shiftClass(shift);
+          const lbl=shift&&shift!=='-'&&shift!==''?shift:'';
+          row+=`<td${we?' style="background:#f5f8ff"':''}>
+            <div class="shift-cell">${lbl?`<span class="shift-pill ${cls}">${lbl}</span>`:`<span class="shift-pill s-EMPTY"> </span>`}</div>
+          </td>`;
+        }
+        tr.innerHTML=row;
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      page.appendChild(table);
+    });
+
+    page.insertAdjacentHTML('beforeend',legendHtml);
+    el.appendChild(page);
+  });
+}
 
 // ── INIT ──────────────────────────────────────────────────────────────────
 renderSchedule();
