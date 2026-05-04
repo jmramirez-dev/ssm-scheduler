@@ -187,23 +187,23 @@
     #mainContent{display:none !important}
     body{background:#fff;margin:0;padding:0}
     #printLayout{display:block !important}
-    .print-page{zoom:0.75}
-    .shift-pill{border:1px solid currentColor}
-    .print-hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;padding-bottom:4px;border-bottom:2px solid #1b3a6b}
-    .print-hdr-title{font-size:12px;font-weight:700;color:#1b3a6b}
-    .print-hdr-sub{font-size:9px;color:#5a7a9a;font-family:'DM Mono',monospace}
-    .print-stats{display:flex;gap:14px;padding:3px 0 5px;font-size:9px;color:#0f1f3d;flex-wrap:nowrap;white-space:nowrap}
+    .print-page{width:100%}
+    .print-hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;padding-bottom:3px;border-bottom:2px solid #1b3a6b}
+    .print-hdr-title{font-size:11px;font-weight:700;color:#1b3a6b}
+    .print-hdr-sub{font-size:8px;color:#5a7a9a;font-family:'DM Mono',monospace}
+    .print-stats{display:flex;gap:12px;padding:2px 0 3px;font-size:8px;color:#0f1f3d;flex-wrap:nowrap;white-space:nowrap}
     .print-stats b{color:#1b3a6b}
-    .print-sec-hdr{font-size:8px;font-weight:700;color:#1b3a6b;text-transform:uppercase;letter-spacing:0.8px;margin:5px 0 2px;page-break-after:avoid}
-    .print-tbl{width:100%;border-collapse:collapse;font-size:8px;margin-bottom:3px;page-break-inside:auto}
-    .print-tbl th{background:#1b3a6b !important;color:#fff !important;padding:4px 3px;font-size:8px;font-weight:600;text-align:center;border-right:1px solid rgba(255,255,255,0.2);white-space:nowrap}
-    .print-tbl .th-name{text-align:left;padding-left:6px;min-width:110px}
-    .print-tbl td{border:1px solid #c2d4e8;padding:1px 2px;height:17px;vertical-align:middle}
-    .print-tbl .td-name{padding:1px 5px;border-right:2px solid #1b3a6b !important;position:static !important;background:#fff !important;min-width:110px}
-    .print-tbl .staff-name{display:block !important;color:#000 !important;visibility:visible !important;font-size:8px;font-weight:500;white-space:nowrap}
-    .print-tbl .staff-meta{display:block !important;color:#555 !important;visibility:visible !important;font-size:7px}
-    .print-tbl .shift-cell{padding:1px;cursor:default}
-    .print-tbl .shift-pill{font-size:7px;padding:1px 3px;min-width:unset}
+    .print-sec-wrap{page-break-inside:avoid}
+    .print-sec-hdr{font-size:7px;font-weight:700;color:#1b3a6b;text-transform:uppercase;letter-spacing:0.8px;margin:3px 0 1px;page-break-after:avoid}
+    .print-tbl{width:100%;border-collapse:collapse;font-size:7px;margin-bottom:2px}
+    .print-tbl th{background:#1b3a6b !important;color:#fff !important;padding:2px 2px;font-size:7px;font-weight:600;text-align:center;border-right:1px solid rgba(255,255,255,0.2);white-space:nowrap;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .print-tbl .th-name{text-align:left;padding-left:5px;min-width:100px}
+    .print-tbl td{border:1px solid #c2d4e8;padding:0 2px;height:12px;vertical-align:middle}
+    .print-tbl .td-name{padding:0 5px;border-right:2px solid #1b3a6b !important;position:static !important;background:#fff !important;min-width:100px}
+    .print-tbl .staff-name{display:block !important;color:#000 !important;visibility:visible !important;font-size:7px;font-weight:500;white-space:nowrap;line-height:1.2}
+    .print-tbl .staff-meta{display:block !important;color:#555 !important;visibility:visible !important;font-size:6px;line-height:1}
+    .print-tbl .shift-cell{padding:0;cursor:default;text-align:center}
+    .print-tbl .shift-pill{font-size:6px;padding:1px 2px;min-width:unset;border-radius:3px;display:inline-block;-webkit-print-color-adjust:exact;print-color-adjust:exact}
     .print-tbl tr{page-break-inside:avoid}
     .print-legend{font-size:7px;color:#5a7a9a;margin-top:4px;border-top:1px solid #c2d4e8;padding-top:3px;display:flex;flex-wrap:wrap;gap:8px}
     .s-OR  {background:#d1fae5 !important;color:#065f46 !important;border-color:#6ee7b7 !important}
@@ -880,8 +880,32 @@ function filterSection(id,btn){activeFilter=id;document.querySelectorAll('.filte
 function searchStaff(v){searchQuery=v;renderSchedule();}
 
 // ── PRINT LAYOUT ──────────────────────────────────────────────────────────
-// Builds a hidden two-page print layout: week 1 (days 0-6) on page 1, week 2 (days 7-13) on page 2.
-// Bypasses sticky positioning and inline onclick to ensure clean rendering.
+// Inline colors applied directly — CSS background stripping cannot affect these.
+const PRINT_COLORS={
+  's-OR':   {bg:'#d1fae5',fg:'#065f46'},
+  's-SR':   {bg:'#ede9fe',fg:'#4c1d95'},
+  's-PMC':  {bg:'#dbeafe',fg:'#1e3a8a'},
+  's-PMR':  {bg:'#cffafe',fg:'#164e63'},
+  's-PMIV': {bg:'#fef3c7',fg:'#78350f'},
+  's-SPA1': {bg:'#fce7f3',fg:'#831843'},
+  's-SPA2': {bg:'#fdf2f8',fg:'#9d174d'},
+  's-AMP':  {bg:'#ffedd5',fg:'#7c2d12'},
+  's-TCT':  {bg:'#ecfccb',fg:'#3f6212'},
+  's-MC':   {bg:'#f3e8ff',fg:'#581c87'},
+  's-NIGHT':{bg:'#e0e7ff',fg:'#1e1b4b'},
+  's-PTO':  {bg:'#fee2e2',fg:'#7f1d1d'},
+  's-DO':   {bg:'#f1f5f9',fg:'#94a3b8'},
+  's-W':    {bg:'#eff6ff',fg:'#1d4ed8'},
+  's-WED':  {bg:'#ccfbf1',fg:'#134e4a'},
+  's-XF':   {bg:'#fae8ff',fg:'#701a75'},
+  's-DS':   {bg:'#e0f2fe',fg:'#0c4a6e'},
+  's-WAF':  {bg:'#fff7ed',fg:'#7c2d12'},
+  's-ED':   {bg:'#dcfce7',fg:'#14532d'},
+  's-PMP':  {bg:'#f8fafc',fg:'#475569'},
+  's-INT':  {bg:'#d1fae5',fg:'#064e3b'},
+  's-RTR':  {bg:'#fefce8',fg:'#713f12'},
+};
+
 function buildPrintLayout(){
   let el=document.getElementById('printLayout');
   if(!el){el=document.createElement('div');el.id='printLayout';document.body.appendChild(el);}
@@ -901,7 +925,7 @@ function buildPrintLayout(){
   const legendHtml=`<div class="print-legend">
     <span>OR</span><span>SR</span><span>PMC</span><span>PMR</span><span>PMIV</span>
     <span>SPA1</span><span>SPA2</span><span>AMP</span><span>TCT</span><span>MC</span>
-    <span>NIGHT</span><span>PTO</span><span>DO</span><span>W=Wknd</span><span>WED=WedShift</span>
+    <span>NIGHT</span><span>PTO</span><span>DO</span><span>W</span><span>WED</span>
     <span>XF/DS/WAF/ED=MRT</span><span>R=Rotation</span><span>Tr=Training</span>
   </div>`;
 
@@ -909,11 +933,11 @@ function buildPrintLayout(){
     const page=document.createElement('div');
     page.className='print-page';
 
-    const weekRange=`${dates[wk.start]} – ${dates[wk.end]}`;
+    const weekRange=`${dates[wk.start]} \u2013 ${dates[wk.end]}`;
     page.innerHTML=`
       <div class="print-hdr">
-        <span class="print-hdr-title">Sterile Products Scheduler — SSM Health St. Mary's</span>
-        <span class="print-hdr-sub">${period.label} · ${wk.label}: ${weekRange}</span>
+        <span class="print-hdr-title">Sterile Products Scheduler \u2014 SSM Health St. Mary's</span>
+        <span class="print-hdr-sub">${period.label} \u00b7 ${wk.label}: ${weekRange}</span>
       </div>
       ${wi===0?statsHtml:''}
     `;
@@ -923,10 +947,14 @@ function buildPrintLayout(){
       const filtered=section.staff.filter(p=>!searchQuery||p.name.toLowerCase().includes(searchQuery.toLowerCase()));
       if(!filtered.length)return;
 
+      // Wrap header+table together so Chrome won't break between them
+      const wrap=document.createElement('div');
+      wrap.className='print-sec-wrap';
+
       const sh=document.createElement('div');
       sh.className='print-sec-hdr';
       sh.textContent=`${section.label} (${filtered.length})`;
-      page.appendChild(sh);
+      wrap.appendChild(sh);
 
       const table=document.createElement('table');
       table.className='print-tbl';
@@ -934,7 +962,7 @@ function buildPrintLayout(){
       let thead=`<thead><tr><th class="th-name">Staff</th>`;
       for(let i=wk.start;i<=wk.end;i++){
         const we=WEEKENDS.includes(i);
-        thead+=`<th${we?' style="color:#93c5fd"':''}>${DAYS[i]}<br><span style="font-weight:300;font-size:7px">${dates[i]}</span></th>`;
+        thead+=`<th${we?' style="background:#1b3a6b;color:#93c5fd"':' style="background:#1b3a6b;color:#fff"'}>${DAYS[i]}<br><span style="font-weight:300;font-size:6px">${dates[i]}</span></th>`;
       }
       thead+=`</tr></thead>`;
       table.innerHTML=thead;
@@ -943,26 +971,31 @@ function buildPrintLayout(){
       filtered.forEach(person=>{
         const tr=document.createElement('tr');
         const displayName=person.name.split(',').reverse().join(' ').trim();
-        let row=`<td class="td-name"><div class="staff-name">${displayName}</div><div class="staff-meta">${person.hrs?person.hrs+'hr':'PRN'}</div></td>`;
+        let row=`<td class="td-name" style="background:#fff;border-right:2px solid #1b3a6b;min-width:100px;padding:0 5px"><div class="staff-name" style="display:block;color:#000;font-size:7px;font-weight:500;white-space:nowrap;line-height:1.2">${displayName}</div><div class="staff-meta" style="display:block;color:#555;font-size:6px;line-height:1">${person.hrs?person.hrs+'hr':'PRN'}</div></td>`;
         for(let di=wk.start;di<=wk.end;di++){
           const shift=person.schedule[di];
           const we=WEEKENDS.includes(di);
           const cls=shiftClass(shift);
           const lbl=shift&&shift!=='-'&&shift!==''?shift:'';
-          row+=`<td${we?' style="background:#f5f8ff"':''}>
-            <div class="shift-cell">${lbl?`<span class="shift-pill ${cls}">${lbl}</span>`:`<span class="shift-pill s-EMPTY"> </span>`}</div>
+          const c=PRINT_COLORS[cls];
+          const pillStyle=c
+            ?`background:${c.bg};color:${c.fg};border:1px solid ${c.fg};font-size:6px;padding:1px 2px;border-radius:3px;display:inline-block;white-space:nowrap`
+            :'font-size:6px;padding:1px 2px;display:inline-block';
+          const tdBg=we?'background:#f0f4ff':'';
+          row+=`<td style="border:1px solid #c2d4e8;height:12px;padding:0 1px;vertical-align:middle;text-align:center;${tdBg}">
+            ${lbl?`<span style="${pillStyle}">${lbl}</span>`:''}
           </td>`;
         }
         tr.innerHTML=row;
         tbody.appendChild(tr);
       });
       table.appendChild(tbody);
-      page.appendChild(table);
+      wrap.appendChild(table);
+      page.appendChild(wrap);
     });
 
     page.insertAdjacentHTML('beforeend',legendHtml);
     el.appendChild(page);
-    // Explicit page break between week 1 and week 2 — more reliable than CSS class
     if(wi===0){
       const pb=document.createElement('div');
       pb.style.cssText='page-break-after:always;break-after:page;height:0;margin:0;padding:0';
