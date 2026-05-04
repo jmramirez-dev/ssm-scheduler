@@ -881,29 +881,30 @@ function searchStaff(v){searchQuery=v;renderSchedule();}
 
 // ── PRINT LAYOUT ──────────────────────────────────────────────────────────
 // Inline colors applied directly — CSS background stripping cannot affect these.
+// Saturated colors — pastel backgrounds were invisible when printed
 const PRINT_COLORS={
-  's-OR':   {bg:'#d1fae5',fg:'#065f46'},
-  's-SR':   {bg:'#ede9fe',fg:'#4c1d95'},
-  's-PMC':  {bg:'#dbeafe',fg:'#1e3a8a'},
-  's-PMR':  {bg:'#cffafe',fg:'#164e63'},
-  's-PMIV': {bg:'#fef3c7',fg:'#78350f'},
-  's-SPA1': {bg:'#fce7f3',fg:'#831843'},
-  's-SPA2': {bg:'#fdf2f8',fg:'#9d174d'},
-  's-AMP':  {bg:'#ffedd5',fg:'#7c2d12'},
-  's-TCT':  {bg:'#ecfccb',fg:'#3f6212'},
-  's-MC':   {bg:'#f3e8ff',fg:'#581c87'},
-  's-NIGHT':{bg:'#e0e7ff',fg:'#1e1b4b'},
-  's-PTO':  {bg:'#fee2e2',fg:'#7f1d1d'},
-  's-DO':   {bg:'#f1f5f9',fg:'#94a3b8'},
-  's-W':    {bg:'#eff6ff',fg:'#1d4ed8'},
-  's-WED':  {bg:'#ccfbf1',fg:'#134e4a'},
-  's-XF':   {bg:'#fae8ff',fg:'#701a75'},
-  's-DS':   {bg:'#e0f2fe',fg:'#0c4a6e'},
-  's-WAF':  {bg:'#fff7ed',fg:'#7c2d12'},
-  's-ED':   {bg:'#dcfce7',fg:'#14532d'},
-  's-PMP':  {bg:'#f8fafc',fg:'#475569'},
-  's-INT':  {bg:'#d1fae5',fg:'#064e3b'},
-  's-RTR':  {bg:'#fefce8',fg:'#713f12'},
+  's-OR':   {bg:'#6ee7b7',fg:'#065f46'},
+  's-SR':   {bg:'#c4b5fd',fg:'#4c1d95'},
+  's-PMC':  {bg:'#93c5fd',fg:'#1e3a8a'},
+  's-PMR':  {bg:'#67e8f9',fg:'#164e63'},
+  's-PMIV': {bg:'#fcd34d',fg:'#78350f'},
+  's-SPA1': {bg:'#f9a8d4',fg:'#831843'},
+  's-SPA2': {bg:'#fbcfe8',fg:'#9d174d'},
+  's-AMP':  {bg:'#fdba74',fg:'#7c2d12'},
+  's-TCT':  {bg:'#bef264',fg:'#3f6212'},
+  's-MC':   {bg:'#d8b4fe',fg:'#581c87'},
+  's-NIGHT':{bg:'#a5b4fc',fg:'#1e1b4b'},
+  's-PTO':  {bg:'#fca5a5',fg:'#7f1d1d'},
+  's-DO':   {bg:'#cbd5e1',fg:'#475569'},
+  's-W':    {bg:'#bfdbfe',fg:'#1d4ed8'},
+  's-WED':  {bg:'#5eead4',fg:'#134e4a'},
+  's-XF':   {bg:'#e879f9',fg:'#701a75'},
+  's-DS':   {bg:'#7dd3fc',fg:'#0c4a6e'},
+  's-WAF':  {bg:'#fb923c',fg:'#431407'},
+  's-ED':   {bg:'#86efac',fg:'#14532d'},
+  's-PMP':  {bg:'#e2e8f0',fg:'#334155'},
+  's-INT':  {bg:'#6ee7b7',fg:'#064e3b'},
+  's-RTR':  {bg:'#fde047',fg:'#713f12'},
 };
 
 function buildPrintLayout(){
@@ -992,7 +993,7 @@ function buildPrintLayout(){
 
         // Name cell
         const tdN=document.createElement('td');
-        tdN.setAttribute('style','background-color:#ffffff;border-right:2px solid #1b3a6b;border-bottom:1px solid #c2d4e8;padding:0 5px;min-width:110px;vertical-align:middle;height:14px');
+        tdN.setAttribute('style','background-color:#ffffff;border-right:2px solid #1b3a6b;border-bottom:1px solid #c2d4e8;padding:0 5px;min-width:110px;vertical-align:middle;height:12px');
         const nameDiv=document.createElement('div');
         nameDiv.setAttribute('style','display:block;color:#000000;font-size:9px;font-weight:500;white-space:nowrap;line-height:1.3');
         nameDiv.textContent=person.name.split(',').reverse().join(' ').trim();
@@ -1007,12 +1008,12 @@ function buildPrintLayout(){
           const shift=person.schedule[di];
           const lbl=shift&&shift!=='-'&&shift!==''?shift:'';
           const td=document.createElement('td');
-          td.setAttribute('style',`border:1px solid #c2d4e8;height:14px;padding:0 1px;vertical-align:middle;text-align:center${WEEKENDS.includes(di)?';background-color:#f0f4ff':''}`);
+          td.setAttribute('style',`border:1px solid #c2d4e8;height:12px;padding:0 1px;vertical-align:middle;text-align:center${WEEKENDS.includes(di)?';background-color:#e8f0fa':''}`);
           if(lbl){
             const colors=PRINT_COLORS[shiftClass(shift)];
             const pill=document.createElement('span');
             pill.textContent=lbl;
-            pill.setAttribute('style',`background-color:${colors?colors.bg:'#f1f5f9'};color:${colors?colors.fg:'#64748b'};border:1px solid ${colors?colors.fg:'#94a3b8'};padding:1px 4px;border-radius:3px;font-size:8px;font-weight:600;display:inline-block;white-space:nowrap`);
+            pill.setAttribute('style',`background-color:${colors?colors.bg:'#e2e8f0'};color:${colors?colors.fg:'#334155'};border:1px solid ${colors?colors.fg:'#94a3b8'};padding:1px 4px;border-radius:3px;font-size:8px;font-weight:600;display:inline-block;white-space:nowrap;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact`);
             td.appendChild(pill);
           }
           tr.appendChild(td);
