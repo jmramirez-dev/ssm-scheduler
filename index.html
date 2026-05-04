@@ -187,8 +187,8 @@
     #mainContent{display:none !important}
     body{background:#fff;margin:0;padding:0}
     #printLayout{display:block !important}
-    .print-page{zoom:0.75;page-break-after:always}
-    .print-page:last-child{page-break-after:avoid}
+    .print-page{zoom:0.75}
+    .shift-pill{border:1px solid currentColor}
     .print-hdr{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;padding-bottom:4px;border-bottom:2px solid #1b3a6b}
     .print-hdr-title{font-size:12px;font-weight:700;color:#1b3a6b}
     .print-hdr-sub{font-size:9px;color:#5a7a9a;font-family:'DM Mono',monospace}
@@ -962,6 +962,12 @@ function buildPrintLayout(){
 
     page.insertAdjacentHTML('beforeend',legendHtml);
     el.appendChild(page);
+    // Explicit page break between week 1 and week 2 — more reliable than CSS class
+    if(wi===0){
+      const pb=document.createElement('div');
+      pb.style.cssText='page-break-after:always;break-after:page;height:0;margin:0;padding:0';
+      el.appendChild(pb);
+    }
   });
 }
 
@@ -969,6 +975,7 @@ function buildPrintLayout(){
 renderSchedule();
 updateStats();
 updateHours();
+buildPrintLayout();
 </script>
 </body>
 </html>
